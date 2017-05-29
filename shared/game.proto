@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package net;
+
+message Connect {
+  string playerSessionId = 1;
+  string playerName = 2;
+}
+
+message ConnectResponse {
+  bool accepted = 1;
+}
+
+message Tick {
+  uint64 tick_id = 1;
+
+  string map_name = 2;
+
+  message Entity {
+    int32 x = 1;
+    int32 y = 2;
+    int32 icon = 3;
+    uint64 id = 4;
+  }
+
+  repeated Entity entities = 3;
+}
+
+message PlayerMove {
+  enum Direction {
+    NONE = 0;
+    NORTH = 1;
+    EAST = 2;
+    SOUTH = 3;
+    WEST = 4;
+  }
+
+  Direction direction = 1;
+}
