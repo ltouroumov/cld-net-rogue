@@ -9,6 +9,9 @@ set(CMAKE_CXX_FLAGS -Wno-deprecated-declarations)
 set(EXECUTABLE prez_game_client)
 include(ProtobufTools)
 
+add_definitions(-DLOCAL_GAMELIFT)
+add_definitions(-DAWS_REGION="us-east-1")
+
 set(PROTOBUF_GENERATE_CPP_APPEND_PATH YES)
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ../shared/game.proto)

@@ -48,8 +48,12 @@ int main(int argc, char** argv) {
     Aws::InitAPI(options);
 
     Aws::Client::ClientConfiguration clientConfiguration;
+#ifdef LOCAL_GAMELIFT
     clientConfiguration.endpointOverride = "127.0.0.1:8080";
     clientConfiguration.scheme = Aws::Http::Scheme::HTTP;
+#else
+    clientConfiguration.region = AWS_REGION;
+#endif
     Aws::Auth::AWSCredentials awsCredentials;
     glClient = new Aws::GameLift::GameLiftClient(clientConfiguration);
 
