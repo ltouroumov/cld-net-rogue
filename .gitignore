@@ -11,3 +11,4 @@ CTestTestfile.cmake
 ext/src/
 build/
 ext/lib/
+pak/

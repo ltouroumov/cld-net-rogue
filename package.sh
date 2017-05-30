@@ -11,7 +11,7 @@ get_version() {
 
 
 version=`get_version`
-dest="pak/"
+dest="pak"
 
 echo "[I] AWS Upload Script"
 echo "[I] Version: $version"
@@ -25,9 +25,9 @@ popd
 
 echo "[+] Copying Files"
 mkdir arch
-cp -rv build/server/prez_game_server arch/server
-cp -rv build/server/data arch/
-cp -rv install.sh arch/
+cp -rv build/server/prez_game_server $dest/server
+cp -rv build/server/data $dest/
+# cp -rv install.sh $dest/
 
 # echo "[+] Uploading"
 # aws gamelift upload-build \
