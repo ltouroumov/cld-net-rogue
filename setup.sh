@@ -9,11 +9,15 @@ popd () {
 }
 
 mkcd () {
-    [[ ! -d "$1" ]] && mkdir -p $1
+    mkdir_s $1
     pushd $1
 }
 
-copy_libs () {
+mkdir_s () {
+    [[ ! -d "$1" ]] && mkdir -p $1
+}
+
+copy_files () {
     typ=$1
     dir=$2
     dest=$3
@@ -37,8 +41,11 @@ build_gamelift_server () {
         -DCMAKE_INSTALL_PREFIX=./prefix \
         ..
     make -j 6
-    copy_libs "a" prefix $lib_dir
-    copy_libs "la" prefix $lib_dir
+    copy_files "so*" prefix/lib $lib_dir
+    copy_files "a*" prefix/lib $lib_dir
+    copy_files "la*" prefix/lib $lib_dir
+    cp -r prefix/include/* $header_dir
+    cp prefix/bin/protoc $bin_dir
     popd
     popd
     popd
@@ -57,7 +64,8 @@ build_aws_sdk () {
         -DCUSTOM_MEMORY_MANAGEMENT=0 \
         ..
     make -j 6 install
-    copy_libs "so" prefix $lib_dir
+    copy_files "so" prefix/lib $lib_dir
+    cp -r prefix/include/* $header_dir
     popd
     popd
 }
@@ -75,7 +83,8 @@ build_yaml_cpp () {
         -DCMAKE_INSTALL_PREFIX=./prefix \
         ..
     make -j 6 install
-    copy_libs "a" prefix $lib_dir
+    copy_files "a" prefix/lib $lib_dir
+    cp -r prefix/include/* $header_dir/
     popd
     popd
 }
@@ -89,14 +98,39 @@ build_rltk () {
     cmake \
         -DCMAKE_INSTALL_PREFIX=./prefix \
         ..
-    make -j 6 install
-    copy_libs "a" prefix $lib_dir
+    make -j 6 rltk
+    copy_files "a" . $lib_dir
     popd
+    [[ ! -d "$header_dir/rltk" ]] && mkdir -p "$header_dir/rltk"
+    copy_files "hpp" rltk $header_dir/rltk
     popd
 }
 
+
+while getopts "c" opt; do
+    case "$opt" in
+        c)
+            BUILD_CLIENT_LIBS="yes"
+            ;;
+        \?)
+            echo "Invalid Option -$OPTARG"
+            exit 1
+            ;;
+    esac
+done
+
 echo "[+] Setting up vendors"
 lib_dir=`realpath ext/lib`
+header_dir=`realpath ext/include`
+bin_dir=`realpath ext/bin`
+
+mkdir_s $lib_dir
+mkdir_s $header_dir
+mkdir_s $bin_dir
+
+echo "[I] Library Dir: $lib_dir"
+echo "[I] Header Dir: $header_dir"
+
 mkcd ext/src
 
 echo "[+] aws-cpp-sdk-gamelift-server"

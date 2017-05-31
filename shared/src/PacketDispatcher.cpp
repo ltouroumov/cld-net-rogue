@@ -22,7 +22,7 @@ void PacketDispatcher::dispatch(pb::Message& msg)
         for (size_t to_remove : mRemoved) {
             auto it = std::find_if(
                 mHandlers.begin(), mHandlers.end(),
-                [&](auto pair) {
+                [&](handlers_map::value_type& pair) {
                     return pair.second->id == to_remove;
                 });
 

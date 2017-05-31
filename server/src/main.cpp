@@ -11,10 +11,8 @@
 
 using asio::ip::tcp;
 
-const int port = 9000;
-
-int main() {
-    auto mainLogger = spdlog::stdout_logger_mt(LOGGER_NAME, true);
+int main(int argc, char* argv[]) {
+    auto mainLogger = spdlog::stdout_logger_mt("main", true);
     mainLogger->set_level(spdlog::level::debug);
 
     auto sharedLogger = spdlog::stdout_logger_mt("shared", true);
@@ -24,6 +22,13 @@ int main() {
 
     try
     {
+        int port = 9000;
+        if (argc == 2) {
+            port = atoi(argv[1]);
+        }
+
+        mainLogger->info("Listening on port {}", port);
+
         GGameLiftManager.reset(new GameLiftManager);
 
         if (!GGameLiftManager->InitializeGameLift(port)) {

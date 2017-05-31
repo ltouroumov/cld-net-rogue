@@ -50,7 +50,7 @@ function(PROTOBUF_GENERATE_CPP SRCS HDRS)
         add_custom_command(
                 OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.cc"
                 "${CMAKE_CURRENT_BINARY_DIR}/${FIL_WE}.pb.h"
-                COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
+                COMMAND env LD_LIBRARY_PATH="${EXT_DIR}/lib:$ENV{LD_LIBRARY_PATH}" ${PROTOBUF_PROTOC_EXECUTABLE}
                 ARGS --cpp_out ${CMAKE_CURRENT_BINARY_DIR} ${_protobuf_include_path} ${ABS_FIL}
                 DEPENDS ${ABS_FIL} ${PROTOBUF_PROTOC_EXECUTABLE}
                 COMMENT "Running C++ protocol buffer compiler on ${FIL}"

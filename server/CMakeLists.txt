@@ -10,7 +10,14 @@ add_definitions(-DGAMELIFT_USE_STD)
 add_definitions(-DHAS_GAMELIFT)
 
 set(PROTOBUF_GENERATE_CPP_APPEND_PATH YES)
-set(LOCAL_LIBRARIES yaml-cpp aws-cpp-sdk-gamelift-server sioclient boost_date_time boost_random boost_system protobuf)
+set(LOCAL_LIBRARIES
+    libyaml-cpp.a
+    libaws-cpp-sdk-gamelift-server.a
+    libsioclient.a
+    libboost_date_time.a
+    libboost_random.a
+    libboost_system.a
+    libprotobuf.a)
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ../shared/game.proto)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})

@@ -3,4 +3,8 @@
 echo "[+] Cleaning"
 
 rm -rv build
-rm -rv arch
+rm -rv pak
+
+if [[ "$1" == "-a" ]]; then
+    rm -rv ext/src
+fi
