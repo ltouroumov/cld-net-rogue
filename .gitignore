@@ -11,3 +11,6 @@ CTestTestfile.cmake
 ext/
 build/
 pak/
+build*/
+cmake-build-*/
+ext-compat/

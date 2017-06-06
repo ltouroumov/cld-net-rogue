@@ -42,7 +42,7 @@ void JoinScene::awsPlayerSessionCreated(
     const Aws::GameLift::Model::CreatePlayerSessionOutcome &outcome,
     const std::shared_ptr<const Aws::Client::AsyncCallerContext> &
 ) {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     if (outcome.IsSuccess()) {
         logger->info("Player Session Created");
@@ -68,7 +68,7 @@ void JoinScene::awsPlayerSessionCreated(
 
 void JoinScene::onConnectResponse(net::ConnectResponse &response)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     if (response.accepted()) {
         director()->replace<PlayScene>(mPlayerSession, mNetwork);

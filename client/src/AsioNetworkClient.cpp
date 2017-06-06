@@ -15,7 +15,7 @@ AsioNetworkClient::AsioNetworkClient()
 
 bool AsioNetworkClient::connect(const std::string &ipAddress, int port)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     try {
         logger->info("Connecting to {}:{}", ipAddress, port);
@@ -52,7 +52,7 @@ void AsioNetworkClient::disconnect()
 
 void AsioNetworkClient::send(pb::Message &message)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
     std::error_code ec;
 
     std::array<uint8_t, 4> header;
@@ -75,7 +75,7 @@ void AsioNetworkClient::send(pb::Message &message)
 
 void AsioNetworkClient::receive()
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     logger->info("Receive loop started");
 

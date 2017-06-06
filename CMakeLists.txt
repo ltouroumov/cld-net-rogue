@@ -3,7 +3,14 @@ project(prez_game)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-set(EXT_PATH ${CMAKE_CURRENT_LIST_DIR}/ext)
+if(NOT EXT_PATH_NAME)
+    set(EXT_PATH_NAME ext)
+endif()
+if(NOT EXT_PATH)
+    set(EXT_PATH ${CMAKE_CURRENT_LIST_DIR}/${EXT_PATH_NAME})
+endif()
+
+message("-- " "Ext Path: ${EXT_PATH}")
 
 include_directories(${EXT_PATH}/include)
 link_directories(${EXT_PATH}/lib)

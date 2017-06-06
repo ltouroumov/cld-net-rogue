@@ -6,6 +6,9 @@ set(CMAKE_CXX_FLAGS -Wno-deprecated-declarations)
 set(EXECUTABLE prez_game_server)
 include(ProtobufTools)
 
+if(LOG_STDOUT)
+    add_definitions(-DLOG_STDOUT)
+endif()
 add_definitions(-DGAMELIFT_USE_STD)
 add_definitions(-DHAS_GAMELIFT)
 

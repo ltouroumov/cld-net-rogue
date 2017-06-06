@@ -101,16 +101,21 @@ build_rltk () {
     make -j 6 rltk
     copy_files "a" . $lib_dir
     popd
-    [[ ! -d "$header_dir/rltk" ]] && mkdir -p "$header_dir/rltk"
+    mkdir_s "$header_dir/rltk"
     copy_files "hpp" rltk $header_dir/rltk
+    cp -r cereal $header_dir
     popd
 }
 
+ext_path=`realpath .`/ext
 
-while getopts "c" opt; do
+while getopts "ce:" opt; do
     case "$opt" in
         c)
             BUILD_CLIENT_LIBS="yes"
+            ;;
+        e)
+            ext_path=`realpath $OPTARG`
             ;;
         \?)
             echo "Invalid Option -$OPTARG"
@@ -120,9 +125,10 @@ while getopts "c" opt; do
 done
 
 echo "[+] Setting up vendors"
-lib_dir=`realpath ext/lib`
-header_dir=`realpath ext/include`
-bin_dir=`realpath ext/bin`
+mkdir_s $ext_path
+lib_dir=$ext_path/lib
+header_dir=$ext_path/include
+bin_dir=$ext_path/bin
 
 mkdir_s $lib_dir
 mkdir_s $header_dir
@@ -131,7 +137,7 @@ mkdir_s $bin_dir
 echo "[I] Library Dir: $lib_dir"
 echo "[I] Header Dir: $header_dir"
 
-mkcd ext/src
+mkcd $ext_path/src
 
 echo "[+] aws-cpp-sdk-gamelift-server"
 build_gamelift_server

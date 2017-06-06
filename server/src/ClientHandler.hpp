@@ -7,7 +7,6 @@
 #include <asio.hpp>
 #include <spdlog/spdlog.h>
 #include "PacketData.hpp"
-#include "Config.hpp"
 #include "PacketHandler.hpp"
 #include "PacketDispatcher.hpp"
 #include "world/Handler.hpp"
@@ -55,6 +54,7 @@ private:
     PacketData mPacketData;
     PacketDispatcher mDispatcher;
     std::shared_ptr<world::Entity> mPlayerEntity;
+    std::string mPlayerSessionId;
 };
 
 

@@ -16,7 +16,7 @@ void ClientManager::DoAccept()
 {
     mAcceptor.async_accept(mSocket, [this](std::error_code ec) {
         if (!ec) {
-            auto logger = spdlog::get(LOGGER_NAME);
+            auto logger = spdlog::get("default");
             logger->info("Accepted Client");
 
             std::make_shared<ClientHandler>(std::move(mSocket), mClients, mWorldHandler)->Start();

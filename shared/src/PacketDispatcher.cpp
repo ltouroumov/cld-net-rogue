@@ -7,7 +7,7 @@
 
 void PacketDispatcher::dispatch(pb::Message& msg)
 {
-    auto logger = spdlog::get("shared");
+    auto logger = spdlog::get("default");
 
     {
         std::lock_guard<std::mutex> guard(mAddedAccess);

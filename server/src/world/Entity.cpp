@@ -12,7 +12,7 @@ using namespace world;
 Entity::Entity(size_t id, Entity::Controller* controller)
     : mId(id), mPosition(0, 0), mController(controller)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
     logger->debug("Controller {}", typeid(mController).name());
 }
 
@@ -28,7 +28,7 @@ void Entity::doTick(size_t tickId)
 
 void Entity::attach(std::shared_ptr<Level> level)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
     logger->debug("Entity Attached");
     mLevel = level;
 }
@@ -70,7 +70,7 @@ void Entity::Controller::think(Entity &entity, size_t tickId)
 
 void PlayerController::think(Entity &entity, size_t tickId)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
     if (mNextMove) {
         Entity::Position nextPos = entity.position();
         switch (mNextMove) {

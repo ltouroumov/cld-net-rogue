@@ -20,7 +20,7 @@ ClientHandler::ClientHandler(tcp::socket socket, Pool &clientPool, world::Handle
 
 ClientHandler::~ClientHandler()
 {
-    auto logger = spdlog::get(LOGGER_NAME);
+    auto logger = spdlog::get("default");
     logger->debug("Client Session Destroyed");
 }
 
@@ -38,7 +38,7 @@ void ClientHandler::Stop()
 
 void ClientHandler::Send(pb::Message &msg)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
     std::error_code ec;
 
     std::array<uint8_t, 4> header;
@@ -72,7 +72,7 @@ void ClientHandler::DoRead()
 void ClientHandler::OnReadHeader(std::error_code ec, std::size_t len)
 {
     using namespace std::placeholders;
-    auto logger = spdlog::get(LOGGER_NAME);
+    auto logger = spdlog::get("default");
 
     if (!ec) {
         if (mPacket.ParseHeader()) {
@@ -93,7 +93,7 @@ void ClientHandler::OnReadHeader(std::error_code ec, std::size_t len)
 void ClientHandler::OnReadBody(std::error_code ec, std::size_t len)
 {
     using namespace std::placeholders;
-    auto mLogger = spdlog::get(LOGGER_NAME);
+    auto mLogger = spdlog::get("default");
 
     if (!ec) {
         mLogger->debug("Got body, read: {:d}, expected: {:d}", len, mPacket.Size());
@@ -121,18 +121,24 @@ void ClientHandler::OnReadBody(std::error_code ec, std::size_t len)
 
 void ClientHandler::OnSocketClose()
 {
-    auto logger = spdlog::get(LOGGER_NAME);
+    auto logger = spdlog::get("default");
     logger->info("Client Socket Closed");
+    if (mPlayerSessionId.size() > 0) {
+        GGameLiftManager->RemovePlayerSession(shared_from_this(), mPlayerSessionId);
+    }
+
     mClientPool.erase(shared_from_this());
     mWorldHandler.leave(shared_from_this());
 }
 
 void ClientHandler::HandleConnect(net::Connect &msg)
 {
-    auto mLogger = spdlog::get(LOGGER_NAME);
+    auto mLogger = spdlog::get("default");
     mLogger->debug("Player connect");
 
     if (GGameLiftManager->AcceptPlayerSession(shared_from_this(), msg.playersessionid())) {
+        mPlayerSessionId = msg.playersessionid();
+
         net::ConnectResponse crsp;
         crsp.set_accepted(true);
         Send(crsp);
