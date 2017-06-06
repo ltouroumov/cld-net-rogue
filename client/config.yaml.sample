@@ -1,0 +1,4 @@
+aws_region: "us-east-1"
+aws_alias_id: null
+aws_access_key_id: null
+aws_secret_key: null

@@ -17,7 +17,7 @@ Loader::Loader(const std::string &base)
 
 void Loader::buildIndex()
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     YAML::Node index = YAML::LoadFile(filePath("index.yaml"));
 
@@ -67,11 +67,10 @@ Level::Ptr Loader::loadLevel(const std::string &file, const std::string& levelNa
     Level::Ptr level = std::make_shared<Level>(levelName);
     level->setSize(data["size"].as<Level::Size>());
 
-    for (auto pair : data["layers"]) {
-        std::string name = pair.first.as<std::string>();
-        YAML::Node layerData = pair.second;
-        bool is_solid = layerData["is_solid"].as<bool>();
-        std::string tiles = layerData["data"].as<std::string>();
+    for (auto item : data["layers"]) {
+        std::string name = item["name"].as<std::string>();
+        bool is_solid = item["is_solid"].as<bool>();
+        std::string tiles = item["data"].as<std::string>();
         Level::Layer layer(name, level->size());
         layer.solid = is_solid;
         for(int tidx = 0; tidx < layer.size.area(); ++tidx) {

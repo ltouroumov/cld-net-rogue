@@ -39,7 +39,7 @@ pb::Message* PacketData::PacketFromType(uint16_t type)
 
 uint16_t PacketData::TypeFromPacket(const pb::Message& msg)
 {
-    // auto logger = spdlog::get("shared");
+    // auto logger = spdlog::get("default");
     const std::type_info& msgType = typeid(msg);
 
     auto it = sPacketIds.find(msgType.hash_code());

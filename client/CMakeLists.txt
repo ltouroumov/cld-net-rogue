@@ -9,6 +9,13 @@ set(CMAKE_CXX_FLAGS -Wno-deprecated-declarations)
 set(EXECUTABLE prez_game_client)
 include(ProtobufTools)
 
+if(NOT USE_REMOTE)
+    add_definitions(-DLOCAL_GAMELIFT)
+endif()
+if(LOG_STDOUT)
+    add_definitions(-DLOG_STDOUT)
+endif()
+
 set(PROTOBUF_GENERATE_CPP_APPEND_PATH YES)
 
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ../shared/game.proto)
@@ -22,6 +29,13 @@ add_executable(${EXECUTABLE} ${PROTO_SRCS} ${PROTO_HDRS} ${SOURCE_FILES} ${SOURC
 target_link_libraries(${EXECUTABLE} yaml-cpp rltk GLU GL ${SFML_LIBRARIES} curl crypto aws-cpp-sdk-core aws-cpp-sdk-gamelift protobuf pthread)
 
 # message("-- " ${CMAKE_SOURCE_DIR})
+
+add_custom_command(
+        TARGET ${EXECUTABLE} PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ARGS
+        ${CMAKE_SOURCE_DIR}/client/config.yaml
+        ${CMAKE_CURRENT_BINARY_DIR}/config.yaml)
 
 add_custom_command(
         TARGET ${EXECUTABLE} PRE_BUILD

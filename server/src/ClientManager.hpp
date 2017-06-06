@@ -5,7 +5,6 @@
 #include <asio.hpp>
 #include <set>
 #include <spdlog/spdlog.h>
-#include "Config.hpp"
 #include "ClientHandler.hpp"
 #include "world/Handler.hpp"
 

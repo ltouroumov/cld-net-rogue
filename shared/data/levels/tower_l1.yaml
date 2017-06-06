@@ -1,6 +1,6 @@
 size: [17, 17]
 layers:
-  floor:
+  - name: floor
     is_solid: false
     data: |
       .................
@@ -20,7 +20,7 @@ layers:
       .................
       .................
       .................
-  wall:
+  - name: wall
     is_solid: true
     data: |
       WWWWWWWWWWWWWWWWW

@@ -10,8 +10,8 @@
 #include "JoinScene.hpp"
 #include "../static.hpp"
 
-MenuScene::MenuScene(Director* director)
-    : Scene(director)
+MenuScene::MenuScene(Director* director, ClientConfig& config)
+    : Scene(director), mConfig(config)
 {
     rltk::register_texture("assets/background_image.png", "backdrop");
     mPseudo = new char[mPseudoSize];
@@ -20,7 +20,7 @@ MenuScene::MenuScene(Director* director)
 
 void MenuScene::tick(double delta)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     ImGui::Begin("Main Menu");
 
@@ -51,7 +51,11 @@ void MenuScene::tick(double delta)
         using namespace std::placeholders;
 
         Aws::GameLift::Model::CreateGameSessionRequest request;
-        request.SetFleetId("fleet-123");
+#ifdef LOCAL_GAMELIFT
+        request.SetFleetId("fleet-test");
+#else
+        request.SetAliasId(mConfig.getAliasId());
+#endif
         request.SetMaximumPlayerSessionCount(16);
         glClient->CreateGameSessionAsync(request, std::bind(&MenuScene::awsSessionCreated, this, _1, _2, _3, _4));
     }
@@ -64,7 +68,11 @@ void MenuScene::tick(double delta)
 
         using namespace std::placeholders;
         Aws::GameLift::Model::DescribeGameSessionsRequest request;
-        request.SetFleetId("fleet-123");
+#ifdef LOCAL_GAMELIFT
+        request.SetFleetId("fleet-test");
+#else
+        request.SetAliasId(mConfig.getAliasId());
+#endif
         mApiRequest = true;
         glClient->DescribeGameSessionsAsync(request, std::bind(&MenuScene::awsSessionsResponse, this, _1, _2, _3, _4));
         mLastUpdate = 0;
@@ -77,7 +85,7 @@ void MenuScene::awsSessionsResponse(
     const Aws::GameLift::Model::DescribeGameSessionsOutcome& outcome,
     const std::shared_ptr<const Aws::Client::AsyncCallerContext>& ctx
 ) {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     if (outcome.IsSuccess()) {
         const auto &sessions = outcome.GetResult().GetGameSessions();
@@ -90,7 +98,7 @@ void MenuScene::awsSessionsResponse(
             }
         }
     } else {
-        logger->error("Failed to update sessions");
+        logger->error("Failed to update sessions: {}", outcome.GetError().GetMessage());
         mApiError = true;
     }
     mApiRequest = false;
@@ -102,12 +110,12 @@ void MenuScene::awsSessionCreated(
     const Aws::GameLift::Model::CreateGameSessionOutcome& outcome,
     const std::shared_ptr<const Aws::Client::AsyncCallerContext>&
 ) {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     if (outcome.IsSuccess()) {
         logger->info("Session Created");
     } else {
-        logger->error("Failed to create session");
+        logger->error("Failed to create session: {}", outcome.GetError().GetMessage());
     }
 }
 

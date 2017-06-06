@@ -58,7 +58,7 @@ void PlayScene::detached()
 
 void PlayScene::onTick(net::Tick &tick)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     mTickId = tick.tick_id();
     if (!mLevel || mLevel->name() != tick.map_name()) {
@@ -88,7 +88,7 @@ PlayScene::map_render_system::map_render_system(data::Level::Ptr &level)
 
 void PlayScene::map_render_system::update(const double duration_ms)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
     auto term = rltk::term(PlayScene::CONSOLE_LAYER);
     if (mLevel) {
         for (int y = 0; y < mLevel->size().height; ++y) {
@@ -121,7 +121,7 @@ PlayScene::player_system::player_system(AsioNetworkClient &network)
 
 void PlayScene::player_system::update(const double duration_ms)
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     int move = 0;
     // Loop through the keyboard input list

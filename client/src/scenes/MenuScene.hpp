@@ -3,6 +3,7 @@
 //
 
 #include "../util/Scene.hpp"
+#include "../ClientConfig.hpp"
 #include <rltk/rltk.hpp>
 #include <aws/core/utils/Outcome.h>
 #include <aws/gamelift/model/DescribeGameSessionsRequest.h>
@@ -17,7 +18,7 @@
 class MenuScene : public Scene
 {
 public:
-    MenuScene(Director*);
+    MenuScene(Director*, ClientConfig&);
 
     void tick(double delta) override;
 
@@ -31,6 +32,7 @@ private:
     void awsSessionsResponse(const Aws::GameLift::GameLiftClient*, const Aws::GameLift::Model::DescribeGameSessionsRequest&, const Aws::GameLift::Model::DescribeGameSessionsOutcome&, const std::shared_ptr<const Aws::Client::AsyncCallerContext>&);
     void awsSessionCreated(const Aws::GameLift::GameLiftClient*, const Aws::GameLift::Model::CreateGameSessionRequest&, const Aws::GameLift::Model::CreateGameSessionOutcome&, const std::shared_ptr<const Aws::Client::AsyncCallerContext>&);
 
+    ClientConfig& mConfig;
     std::vector<std::string> mSessions;
     std::string mSelectedSession;
 

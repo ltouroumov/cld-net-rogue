@@ -55,7 +55,7 @@ void Handler::leave(const std::shared_ptr<ClientHandler> &clientHandler)
 
 std::shared_ptr<Entity> Handler::addPlayerEntity()
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     std::shared_ptr<Level>& topLevel = mWorld.levels().at(0);
     data::Level::Ptr& levelData = topLevel->data();

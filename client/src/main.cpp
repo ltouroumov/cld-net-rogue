@@ -15,6 +15,7 @@
 #include "util/Director.hpp"
 #include "scenes/MenuScene.hpp"
 #include "static.hpp"
+#include "ClientConfig.hpp"
 
 using asio::ip::tcp;
 bool imgui_init = false;
@@ -34,11 +35,14 @@ void tick(double delta) {
 }
 
 int main(int argc, char** argv) {
-    auto sharedLog = spdlog::stdout_logger_mt("shared", true);
-    sharedLog->set_level(spdlog::level::debug);
-
-    auto logger = spdlog::stdout_logger_mt("main", true);
+#ifdef LOG_STDOUT
+    auto logger = spdlog::stdout_logger_mt("default", true);
+#else
+    auto logger = spdlog::basic_logger_mt("default", "./logs/main.log", true);
+#endif
     logger->set_level(spdlog::level::debug);
+
+    ClientConfig config("./config.yaml");
 
     PacketData::Initialize();
 
@@ -47,11 +51,21 @@ int main(int argc, char** argv) {
     Aws::SDKOptions options;
     Aws::InitAPI(options);
 
+    Aws::Auth::AWSCredentials credentials;
+#ifndef LOCAL_GAMELIFT
+    credentials.SetAWSAccessKeyId(config.getAwsAccessKeyId());
+    credentials.SetAWSSecretKey(config.getAwsSecretKey());
+#endif
+
     Aws::Client::ClientConfiguration clientConfiguration;
+#ifdef LOCAL_GAMELIFT
     clientConfiguration.endpointOverride = "127.0.0.1:8080";
     clientConfiguration.scheme = Aws::Http::Scheme::HTTP;
+#else
+    clientConfiguration.region = config.getAwsRegion();
+#endif
     Aws::Auth::AWSCredentials awsCredentials;
-    glClient = new Aws::GameLift::GameLiftClient(clientConfiguration);
+    glClient = new Aws::GameLift::GameLiftClient(credentials, clientConfiguration);
 
     rltk::init(rltk::config_advanced("assets"));
 
@@ -70,7 +84,7 @@ int main(int argc, char** argv) {
     };
 
     director = new Director();
-    director->push(new MenuScene(director));
+    director->push<MenuScene>(config);
 
     rltk::run(tick);
 

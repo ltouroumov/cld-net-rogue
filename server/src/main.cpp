@@ -3,7 +3,6 @@
 #include <list>
 #include <asio.hpp>
 #include <spdlog/spdlog.h>
-#include "Config.hpp"
 #include "GameLiftManager.hpp"
 #include "ClientManager.hpp"
 #include "data/Loader.hpp"
@@ -11,23 +10,29 @@
 
 using asio::ip::tcp;
 
-const int port = 9000;
-
-int main() {
-    auto mainLogger = spdlog::stdout_logger_mt(LOGGER_NAME, true);
-    mainLogger->set_level(spdlog::level::debug);
-
-    auto sharedLogger = spdlog::stdout_logger_mt("shared", true);
-    sharedLogger->set_level(spdlog::level::debug);
+int main(int argc, char* argv[]) {
+#ifdef LOG_STDOUT
+    auto logger = spdlog::stdout_logger_mt("default", true);
+#else
+    auto logger = spdlog::basic_logger_mt("default", "./logs/main.log", true);
+#endif
+    logger->set_level(spdlog::level::debug);
 
     PacketData::Initialize();
 
     try
     {
+        int port = 9000;
+        if (argc == 2) {
+            port = atoi(argv[1]);
+        }
+
+        logger->info("Listening on port {}", port);
+
         GGameLiftManager.reset(new GameLiftManager);
 
         if (!GGameLiftManager->InitializeGameLift(port)) {
-            mainLogger->error("Failed to initialize GameLift!");
+            logger->error("Failed to initialize GameLift!");
             return -1;
         }
 
@@ -47,6 +52,7 @@ int main() {
     {
         std::cerr << e.what() << std::endl;
     }
+    GGameLiftManager->OnProcessTerminate();
 
     return 0;
 }

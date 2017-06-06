@@ -26,7 +26,7 @@ data::Level::Ptr &Level::data()
 
 std::shared_ptr<Entity> Level::entityAt(int x, int y)
 {
-    auto it = std::find_if(mEntities.begin(), mEntities.end(), [&](auto& entity) -> bool {
+    auto it = std::find_if(mEntities.begin(), mEntities.end(), [&](const std::shared_ptr<Entity>& entity) -> bool {
         return entity->position().x == x && entity->position().y == y;
     });
 

@@ -33,7 +33,7 @@ void World::start(const std::string &dungeonName)
 
 void World::doTick()
 {
-    auto logger = spdlog::get("main");
+    auto logger = spdlog::get("default");
 
     mTickId++;
 

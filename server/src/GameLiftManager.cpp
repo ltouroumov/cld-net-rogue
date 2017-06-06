@@ -19,7 +19,7 @@ GameLiftManager::GameLiftManager()
 bool GameLiftManager::InitializeGameLift(int listenPort)
 {
 #ifdef HAS_GAMELIFT
-    auto mLogger = spdlog::get(LOGGER_NAME);
+    auto mLogger = spdlog::get("default");
     using namespace std::placeholders;
 
     auto initOutcome = Aws::GameLift::Server::InitSDK();
@@ -28,8 +28,8 @@ bool GameLiftManager::InitializeGameLift(int listenPort)
         return false;
 
     std::vector<std::string> logPaths;
-    logPaths.push_back("./logs/serverOut.log");
-    logPaths.push_back("./logs/serverErr.log");
+    logPaths.push_back("./logs/main.log");
+    logPaths.push_back("./logs/shared.log");
 
     auto processReadyParameter = Aws::GameLift::Server::ProcessParameters(
         std::bind(&GameLiftManager::OnStartGameSession, this, _1),
@@ -61,7 +61,7 @@ void GameLiftManager::FinalizeGameLift()
 bool GameLiftManager::AcceptPlayerSession(std::shared_ptr<ClientHandler> psess, const std::string &playerSessionId)
 {
 #ifdef HAS_GAMELIFT
-    auto mLogger = spdlog::get(LOGGER_NAME);
+    auto mLogger = spdlog::get("default");
     auto outcome = Aws::GameLift::Server::AcceptPlayerSession(playerSessionId);
 
     if (outcome.IsSuccess())
@@ -81,10 +81,12 @@ bool GameLiftManager::AcceptPlayerSession(std::shared_ptr<ClientHandler> psess, 
 
 void GameLiftManager::RemovePlayerSession(std::shared_ptr<ClientHandler> psess, const std::string &playerSessionId)
 {
-#ifdef HAS_GAMELIST
+#ifdef HAS_GAMELIFT
+    auto mLogger = spdlog::get("default");
     auto outcome = Aws::GameLift::Server::RemovePlayerSession(playerSessionId);
     if (outcome.IsSuccess())
     {
+        mLogger->debug("RemovedPlayerSession: {:s}", playerSessionId);
         mClientSessions.erase(psess);
     }
     else
@@ -100,7 +102,7 @@ void GameLiftManager::OnStartGameSession(Aws::GameLift::Server::Model::GameSessi
 {
     Aws::GameLift::Server::ActivateGameSession();
 
-    auto mLogger = spdlog::get(LOGGER_NAME);
+    auto mLogger = spdlog::get("default");
     mLogger->info("OnStartGameSession Success");
 }
 #else
@@ -120,8 +122,10 @@ void GameLiftManager::OnProcessTerminate()
 
     mActivated = false;
 
-    auto mLogger = spdlog::get(LOGGER_NAME);
+    auto mLogger = spdlog::get("default");
     mLogger->info("OnProcessTerminate Success");
 #endif
+
+    exit(0);
 }
 
