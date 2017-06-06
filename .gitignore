@@ -13,3 +13,4 @@ pak/
 build*/
 cmake-build-*/
 ext-compat/
+client/config.yaml
